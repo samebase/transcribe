@@ -2,7 +2,9 @@
 
 This repo is a Windows and macOS/Linux command-line transcription tool. All source
 files live here. `install.ps1` creates Windows command stubs and Explorer verbs;
-`install.sh` links the POSIX launcher into `~/.local/bin`.
+`install.sh` links the POSIX launcher into `~/.local/bin`. On macOS it also calls
+`install_finder_action.py` to install the Finder service. `--no-finder` installs
+only the terminal command.
 
 ## Working rules
 
@@ -44,6 +46,9 @@ files live here. `install.ps1` creates Windows command stubs and Explorer verbs;
 - `transcribe` resolves its symlink and launches `transcribe.py` using the clone's
   `.venv/bin/python3` when present, or `python3` from PATH otherwise. `deps.sh`
   selects the same interpreter. The Python path uses ffmpeg on PATH and pip faster-whisper.
+- The Finder service runs that same launcher for each selected media file, with
+  an explicit PATH. Its installer only replaces workflows with our bundle ID.
+  Native Automator execution is covered by `test_finder_action.py` on macOS.
 - `.env` is loaded next to `transcribe.py`, regardless of the working directory.
   Existing environment variables take precedence. Document variables in `.env.example`.
 - Output is `<input_basename>.srt` beside the input. Temporary WAV files are
