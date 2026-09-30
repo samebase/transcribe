@@ -47,6 +47,12 @@ def die(msg: str, code: int = 1) -> None:
     raise SystemExit(code)
 
 
+# Name the running interpreter: the launcher uses the clone's .venv without activating it.
+def pip_install_command(*packages: str) -> str:
+    requirements = Path(__file__).with_name("requirements.txt")
+    return subprocess.list2cmdline([sys.executable, "-m", "pip", "install", "-r", str(requirements), *packages])
+
+
 def load_dotenv_file(path: Path) -> None:
     if not path.is_file():
         return
@@ -204,8 +210,8 @@ def diarize_audio(
     except ImportError:
         die(
             "Speaker diarization needs pyannote.audio.\n"
-            "In the activated Python environment, run:\n"
-            f'  python -m pip install -r "{Path(__file__).with_name("requirements.txt")}" pyannote.audio\n',
+            "Install it with:\n"
+            f"  {pip_install_command('pyannote.audio')}\n",
         )
 
     try:
@@ -390,8 +396,7 @@ def main() -> None:
     except ImportError:
         die(
             "faster-whisper is not installed.\n"
-            "In the activated Python environment, run:\n"
-            f'  python -m pip install -r "{Path(__file__).with_name("requirements.txt")}"\n'
+            f"  {pip_install_command()}\n"
             "Or run: bash deps.sh\n",
         )
 

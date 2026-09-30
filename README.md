@@ -44,16 +44,15 @@ The installer writes command stubs into `C:\dev\tools`, offers to add it to your
 **macOS / Linux:** You'll need Python 3.10 or newer, pip and ffmpeg. On macOS, `deps.sh` can install ffmpeg through Homebrew. On Linux, install ffmpeg through your package manager first.
 
 ```bash
-python3 -m venv .venv
 bash deps.sh
 bash install.sh
 ```
 
-Use a Python 3.10 or newer interpreter to create `.venv`. For example, use `python3.12 -m venv .venv` if the default `python3` is older. The dependency script and launcher use this environment automatically, so activation is not required.
+`deps.sh` creates `.venv` in this clone and installs the Python packages there. The launcher uses this environment automatically, so activation is not required. If the default `python3` is older than 3.10, run `python3.12 -m venv .venv` first.
 
 On macOS, the installer adds **Transcribe to SRT** to Finder's **Services** menu. It also links the terminal command into `~/.local/bin`. Use `bash install.sh --no-finder` for a terminal-only installation. You can choose a command directory with `bash install.sh /path/to/bin`. Keep the clone and its `.venv` together.
 
-Python dependencies are listed in `requirements.txt`. This excludes PyAV 19, which removed an audio-decoding option used by faster-whisper. For a manual package installation, use `python -m pip install -r requirements.txt` from this clone.
+Python dependencies are listed in `requirements.txt`. For a manual package installation, use `python -m pip install -r requirements.txt` from this clone.
 
 Regular transcription needs no API key. For speaker mode, copy `.env.example` to `.env` in this clone and fill in `HF_TOKEN` after accepting the model terms, as described below. The Python command reads that file wherever you run it from; existing environment variables take precedence. Optional model settings are listed there too.
 

@@ -3,10 +3,7 @@
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PYTHON_CMD=python3
-if [[ -x "$REPO_DIR/.venv/bin/python3" ]]; then
-  PYTHON_CMD="$REPO_DIR/.venv/bin/python3"
-fi
+PYTHON_CMD="$REPO_DIR/.venv/bin/python3"
 
 WITH_DIARIZE=0
 if [[ "${1:-}" == "--with-diarize" ]]; then
@@ -28,11 +25,13 @@ else
   fi
 fi
 
+if [[ ! -x "$PYTHON_CMD" ]]; then
+  echo "  Creating Python environment in $REPO_DIR/.venv..."
+  python3 -m venv "$REPO_DIR/.venv"
+fi
+
 echo "  Installing Python dependencies..."
 PIP_ARGS=(install -q -r "$REPO_DIR/requirements.txt")
-if "$PYTHON_CMD" -c 'import sys; sys.exit(sys.prefix != sys.base_prefix)'; then
-  PIP_ARGS+=(--user)
-fi
 if [[ "$WITH_DIARIZE" == "1" ]]; then
   PIP_ARGS+=(pyannote.audio)
 fi
