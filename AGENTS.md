@@ -45,7 +45,8 @@ only the terminal command.
   under `C:\dev\tools`, with CUDA and a CPU retry. `--diarize` switches to Python.
 - `transcribe` resolves its symlink and launches `transcribe.py` using the clone's
   `.venv/bin/python3` when present, or `python3` from PATH otherwise. `deps.sh`
-  selects the same interpreter. The Python path uses ffmpeg on PATH and pip faster-whisper.
+  creates that `.venv` when it is missing and installs into it. The Python path
+  uses ffmpeg on PATH and pip faster-whisper.
 - The Finder service runs that same launcher for each selected media file, with
   an explicit PATH. Its installer only replaces workflows with our bundle ID.
   Native Automator execution is covered by `test_finder_action.py` on macOS.
