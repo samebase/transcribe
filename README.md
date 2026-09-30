@@ -51,13 +51,17 @@ bash install.sh
 
 Use a Python 3.10 or newer interpreter to create `.venv`. For example, use `python3.12 -m venv .venv` if the default `python3` is older. The dependency script and launcher use this environment automatically, so activation is not required.
 
-The installer links `transcribe` into `~/.local/bin` and prints a PATH setting if needed. You can also choose a destination with `bash install.sh /path/to/bin`. Keep the clone and its `.venv` together.
+On macOS, the installer adds **Transcribe to SRT** to Finder's **Services** menu. It also links the terminal command into `~/.local/bin`. Use `bash install.sh --no-finder` for a terminal-only installation. You can choose a command directory with `bash install.sh /path/to/bin`. Keep the clone and its `.venv` together.
 
 Python dependencies are listed in `requirements.txt`. This excludes PyAV 19, which removed an audio-decoding option used by faster-whisper. For a manual package installation, use `python -m pip install -r requirements.txt` from this clone.
 
 Regular transcription needs no API key. For speaker mode, copy `.env.example` to `.env` in this clone and fill in `HF_TOKEN` after accepting the model terms, as described below. The Python command reads that file wherever you run it from; existing environment variables take precedence. Optional model settings are listed there too.
 
 ## Using it
+
+**macOS:** Select one or more recordings in Finder, right-click, then choose **Services > Transcribe to SRT**. The action transcribes each file locally. Wait for the `.srt` to appear in the same folder. No Terminal window is needed.
+
+**Terminal:**
 
 ```bash
 transcribe /path/to/video.mp4 --cpu
@@ -162,6 +166,8 @@ On macOS / Linux, remove the installed symlink, using your chosen directory if d
 ```bash
 rm ~/.local/bin/transcribe
 ```
+
+On macOS, also move `~/Library/Services/Transcribe to SRT.workflow` to the Trash to remove the Finder action. Other Finder services are unchanged.
 
 ## Development
 

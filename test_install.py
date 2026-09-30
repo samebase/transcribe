@@ -24,7 +24,7 @@ class PosixInstallTests(unittest.TestCase):
             venv = repo / ".venv"
             subprocess.run([sys.executable, "-m", "venv", "--without-pip", str(venv)], check=True)
             target = Path(tmp) / "bin"
-            subprocess.run(["bash", str(repo / "install.sh"), str(target)], check=True, capture_output=True)
+            subprocess.run(["bash", str(repo / "install.sh"), "--no-finder", str(target)], check=True, capture_output=True)
 
             result = subprocess.run(
                 [str(target / "transcribe"), "video with spaces.mov"],
@@ -39,7 +39,7 @@ class PosixInstallTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp) / "bin with spaces"
             for _ in range(2):
-                subprocess.run(["bash", str(REPO / "install.sh"), str(target)], cwd=tmp, check=True, capture_output=True)
+                subprocess.run(["bash", str(REPO / "install.sh"), "--no-finder", str(target)], cwd=tmp, check=True, capture_output=True)
             launcher = target / "transcribe"
             self.assertTrue(launcher.is_symlink())
             self.assertEqual(launcher.resolve(), REPO / "transcribe")
@@ -51,6 +51,6 @@ class PosixInstallTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             launcher = Path(tmp) / "transcribe"
             launcher.write_text("existing command", encoding="utf-8")
-            result = subprocess.run(["bash", str(REPO / "install.sh"), tmp], capture_output=True, text=True)
+            result = subprocess.run(["bash", str(REPO / "install.sh"), "--no-finder", tmp], capture_output=True, text=True)
             self.assertNotEqual(result.returncode, 0)
             self.assertEqual(launcher.read_text(encoding="utf-8"), "existing command")

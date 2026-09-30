@@ -19,11 +19,20 @@ jobs:
           python -m pip install -r requirements.txt numpy
           python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
       - run: python -m unittest discover -v
-      - run: python -m compileall -q transcribe.py test_transcribe.py test_install.py
+      - run: python -m compileall -q transcribe.py install_finder_action.py test_transcribe.py test_install.py test_finder_action.py
       - name: Check shell scripts and launcher
         run: |
           bash -n install.sh deps.sh transcribe
           ./transcribe --help
+
+  finder:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest -v test_finder_action test_install
 
   powershell:
     runs-on: windows-latest
