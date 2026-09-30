@@ -61,13 +61,13 @@ if (Get-Command python -ErrorAction SilentlyContinue) {
 if ($fastWhisperOk) {
     Write-Host "    OK  faster-whisper Python package" -ForegroundColor Green
 } else {
-    Write-Host "    OPTIONAL  faster-whisper Python package missing: python -m pip install faster-whisper" -ForegroundColor Yellow
+    Write-Host "    OPTIONAL  faster-whisper Python package missing: python -m pip install -r `"$PSScriptRoot/requirements.txt`"" -ForegroundColor Yellow
 }
 
 if ($pyannoteOk) {
     Write-Host "    OK  pyannote.audio Python package" -ForegroundColor Green
 } else {
-    Write-Host "    OPTIONAL  pyannote.audio missing: python -m pip install pyannote.audio" -ForegroundColor Yellow
+    Write-Host "    OPTIONAL  pyannote.audio missing: python -m pip install -r `"$PSScriptRoot/requirements.txt`" pyannote.audio" -ForegroundColor Yellow
 }
 
 Write-Host "    For --diarize, accept the pyannote model terms and set HF_TOKEN." -ForegroundColor Yellow

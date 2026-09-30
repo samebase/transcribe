@@ -16,6 +16,25 @@ sys.modules["transcribe_tool"] = transcribe_tool
 SPEC.loader.exec_module(transcribe_tool)
 
 
+class TranscribeAudioTests(unittest.TestCase):
+    def test_whisper_decodes_the_extracted_pcm_wav_without_a_model(self):
+        from faster_whisper.audio import decode_audio
+
+        with tempfile.TemporaryDirectory() as tmp:
+            wav_path = Path(tmp) / "extracted.wav"
+            with wave.open(str(wav_path), "wb") as output:
+                output.setnchannels(1)
+                output.setsampwidth(2)
+                output.setframerate(16000)
+                output.writeframes(b"\x00\x00" * 16000)
+
+            audio = decode_audio(str(wav_path))
+
+        self.assertEqual(audio.shape, (16000,))
+        self.assertEqual(str(audio.dtype), "float32")
+        self.assertFalse(audio.any())
+
+
 class TranscribeSpeakerTests(unittest.TestCase):
     def test_repo_dotenv_is_loaded_next_to_script_regardless_of_cwd(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -20,7 +20,7 @@ On Windows the regular command uses faster-whisper-xxl, with a CPU retry if CUDA
 
 Paste this into your AI coding agent (Claude Code, Codex, Cursor...):
 
-> Clone https://github.com/mikecann/transcribe and make it my own. It's one of Mike
+> Clone https://github.com/samebase/transcribe and make it my own. It's one of Mike
 > Cann's personal tools, so read the README first, change anything specific to his
 > setup to suit mine, then help me get it running.
 
@@ -29,7 +29,7 @@ Paste this into your AI coding agent (Claude Code, Codex, Cursor...):
 Clone the repo and keep it where you want the source to live. The installed launchers point at this clone, so rerun the installer if you move it.
 
 ```bash
-git clone https://github.com/mikecann/transcribe.git
+git clone https://github.com/samebase/transcribe.git
 cd transcribe
 ```
 
@@ -44,20 +44,16 @@ The installer writes command stubs into `C:\dev\tools`, offers to add it to your
 **macOS / Linux:** You'll need Python 3.10 or newer, pip and ffmpeg. On macOS, `deps.sh` can install ffmpeg through Homebrew. On Linux, install ffmpeg through your package manager first.
 
 ```bash
+python3 -m venv .venv
 bash deps.sh
 bash install.sh
 ```
 
-The installer links `transcribe` into `~/.local/bin` and prints a PATH setting if needed. You can also choose a destination with `bash install.sh /path/to/bin`.
+Use a Python 3.10 or newer interpreter to create `.venv`. For example, use `python3.12 -m venv .venv` if the default `python3` is older. The dependency script and launcher use this environment automatically, so activation is not required.
 
-If your Python installation blocks `pip install --user`, use a virtual environment instead, and keep it activated when running the launcher:
+The installer links `transcribe` into `~/.local/bin` and prints a PATH setting if needed. You can also choose a destination with `bash install.sh /path/to/bin`. Keep the clone and its `.venv` together.
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install faster-whisper
-bash install.sh
-```
+Python dependencies are listed in `requirements.txt`. This excludes PyAV 19, which removed an audio-decoding option used by faster-whisper. For a manual package installation, use `python -m pip install -r requirements.txt` from this clone.
 
 Regular transcription needs no API key. For speaker mode, copy `.env.example` to `.env` in this clone and fill in `HF_TOKEN` after accepting the model terms, as described below. The Python command reads that file wherever you run it from; existing environment variables take precedence. Optional model settings are listed there too.
 
@@ -100,10 +96,10 @@ This labels speakers as `SPEAKER_00`, `SPEAKER_01`, etc. It does not know real n
 1. Install the optional packages:
 
    ```powershell
-   python -m pip install faster-whisper pyannote.audio
+   python -m pip install -r requirements.txt pyannote.audio
    ```
 
-   On macOS / Linux, outside a virtual environment, you can also use:
+   On macOS / Linux, you can use the clone's environment:
 
    ```bash
    bash deps.sh --with-diarize
@@ -172,7 +168,7 @@ rm ~/.local/bin/transcribe
 In an activated virtual environment, install the test dependencies and run:
 
 ```bash
-python -m pip install numpy torch
+python -m pip install -r requirements.txt numpy torch
 python -m unittest discover -v
 bash -n install.sh deps.sh transcribe
 ./transcribe --help

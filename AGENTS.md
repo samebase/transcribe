@@ -10,8 +10,8 @@ files live here. `install.ps1` creates Windows command stubs and Explorer verbs;
   first, then implement until it passes. Extract a test seam if needed.
 - When behaviour or a tested contract changes, update its tests and rerun them.
 - Before committing, run `python3 -m unittest discover -v` and smoke-test the
-  actual launcher. The tests need `numpy` and `torch`, but no downloaded models,
-  GPU, Hugging Face token or pyannote pipeline.
+  actual launcher. The tests need `requirements.txt`, `numpy` and `torch`, but no
+  downloaded models, GPU, Hugging Face token or pyannote pipeline.
 - Parse every `.ps1` file with PowerShell's
   `[System.Management.Automation.Language.Parser]::ParseFile`. On Windows, also
   run the installer and uninstaller and check exit codes.
@@ -34,14 +34,16 @@ files live here. `install.ps1` creates Windows command stubs and Explorer verbs;
   imports before recommending package installation.
 - Use clear `Write-Host` output with colour for checks.
 - `deps.sh` sets up ffmpeg and faster-whisper. `--with-diarize` also installs
-  pyannote.audio. Keep this optional.
+  pyannote.audio. Keep this optional. All Python installation paths use
+  `requirements.txt` to preserve dependency compatibility.
 
 ## transcribe details
 
 - `transcribe.bat` uses `ffmpeg.exe`, `faster-whisper-xxl.exe` and `_models`
   under `C:\dev\tools`, with CUDA and a CPU retry. `--diarize` switches to Python.
-- `transcribe` resolves its symlink and launches `transcribe.py` using `python3`.
-  The Python path uses ffmpeg on PATH and pip faster-whisper.
+- `transcribe` resolves its symlink and launches `transcribe.py` using the clone's
+  `.venv/bin/python3` when present, or `python3` from PATH otherwise. `deps.sh`
+  selects the same interpreter. The Python path uses ffmpeg on PATH and pip faster-whisper.
 - `.env` is loaded next to `transcribe.py`, regardless of the working directory.
   Existing environment variables take precedence. Document variables in `.env.example`.
 - Output is `<input_basename>.srt` beside the input. Temporary WAV files are
