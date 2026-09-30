@@ -204,8 +204,8 @@ def diarize_audio(
     except ImportError:
         die(
             "Speaker diarization needs pyannote.audio.\n"
-            "Install it with:\n"
-            "  python -m pip install pyannote.audio\n",
+            "In the activated Python environment, run:\n"
+            f'  python -m pip install -r "{Path(__file__).with_name("requirements.txt")}" pyannote.audio\n',
         )
 
     try:
@@ -390,7 +390,8 @@ def main() -> None:
     except ImportError:
         die(
             "faster-whisper is not installed.\n"
-            "  python3 -m pip install faster-whisper\n"
+            "In the activated Python environment, run:\n"
+            f'  python -m pip install -r "{Path(__file__).with_name("requirements.txt")}"\n'
             "Or run: bash deps.sh\n",
         )
 

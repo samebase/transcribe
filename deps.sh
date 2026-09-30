@@ -2,6 +2,12 @@
 # macOS / Linux: ffmpeg + faster-whisper for the transcribe launcher.
 set -euo pipefail
 
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PYTHON_CMD=python3
+if [[ -x "$REPO_DIR/.venv/bin/python3" ]]; then
+  PYTHON_CMD="$REPO_DIR/.venv/bin/python3"
+fi
+
 WITH_DIARIZE=0
 if [[ "${1:-}" == "--with-diarize" ]]; then
   WITH_DIARIZE=1
@@ -22,10 +28,17 @@ else
   fi
 fi
 
-echo "  Installing Python package faster-whisper (user site ok)..."
-python3 -m pip install --user -q "faster-whisper>=1.0.0"
+echo "  Installing Python dependencies..."
+PIP_ARGS=(install -q -r "$REPO_DIR/requirements.txt")
+if "$PYTHON_CMD" -c 'import sys; sys.exit(sys.prefix != sys.base_prefix)'; then
+  PIP_ARGS+=(--user)
+fi
+if [[ "$WITH_DIARIZE" == "1" ]]; then
+  PIP_ARGS+=(pyannote.audio)
+fi
+"$PYTHON_CMD" -m pip "${PIP_ARGS[@]}"
 
-if python3 -c "import faster_whisper" 2>/dev/null; then
+if "$PYTHON_CMD" -c "import faster_whisper" 2>/dev/null; then
   echo "  OK  faster-whisper import"
 else
   echo "  FAILED  faster-whisper still not importable"
@@ -33,10 +46,7 @@ else
 fi
 
 if [[ "$WITH_DIARIZE" == "1" ]]; then
-  echo "  Installing optional Python package pyannote.audio for --diarize..."
-  python3 -m pip install --user -q "pyannote.audio"
-
-  if python3 -c "import pyannote.audio" 2>/dev/null; then
+  if "$PYTHON_CMD" -c "import pyannote.audio" 2>/dev/null; then
     echo "  OK  pyannote.audio import"
   else
     echo "  FAILED  pyannote.audio still not importable"

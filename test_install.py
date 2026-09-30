@@ -1,5 +1,7 @@
 import os
+import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,6 +12,29 @@ REPO = Path(__file__).resolve().parent
 
 @unittest.skipIf(os.name == "nt", "POSIX launcher installer")
 class PosixInstallTests(unittest.TestCase):
+    def test_launcher_uses_clone_venv_without_activation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp) / "clone with spaces"
+            repo.mkdir()
+            shutil.copy(REPO / "transcribe", repo / "transcribe")
+            shutil.copy(REPO / "install.sh", repo / "install.sh")
+            (repo / "transcribe.py").write_text(
+                "import sys\nprint(sys.prefix)\nprint(sys.argv[1])\n", encoding="utf-8"
+            )
+            venv = repo / ".venv"
+            subprocess.run([sys.executable, "-m", "venv", "--without-pip", str(venv)], check=True)
+            target = Path(tmp) / "bin"
+            subprocess.run(["bash", str(repo / "install.sh"), str(target)], check=True, capture_output=True)
+
+            result = subprocess.run(
+                [str(target / "transcribe"), "video with spaces.mov"],
+                cwd=tmp, check=True, capture_output=True, text=True,
+            )
+
+            prefix, argument = result.stdout.splitlines()
+            self.assertEqual(Path(prefix).resolve(), venv.resolve())
+            self.assertEqual(argument, "video with spaces.mov")
+
     def test_install_twice_from_another_directory_and_run_link_with_spaces(self):
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp) / "bin with spaces"
